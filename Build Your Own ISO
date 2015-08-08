@@ -1,0 +1,55 @@
+##################################################################
+Install live-build 
+##################################################################
+
+sudo apt-get install live-build
+
+##################################################################
+Git clone the live-build configs
+##################################################################
+git clone git://git.kali.org/live-build-config.git
+cd live-build-config
+
+
+##################################################################
+OPTIONAL STEPS 
+##################################################################
+
+##################################################################
+Edit the tools list, add cryptsetup, gparted, asap.
+##################################################################
+echo cryptsetup >> kali-config/variant-light/package-lists/kali.list.chroot
+echo gparted >> kali-config/variant-light/package-lists/kali.list.chroot
+echo amap >> kali-config/variant-light/package-lists/kali.list.chroot
+
+
+##################################################################
+!!!!!!!!!!!!!!!!!ONLY IF YOU KNOW WHAT YOU ARE DOING!!!!!!!!!!!!!!
+Create a chroot hook which enables boot time starting of the SSHD service
+##################################################################
+echo 'update-rc.d -f ssh enable' >>  kali-config/common/hooks/01-start-ssh.chroot
+chmod +x kali-config/common/hooks/01-start-ssh.chroot
+
+#Doesnt seem to be working right. 
+##################################################################
+#Create a binary hook which adds a new boot menu option for Unattended Install
+##################################################################
+#wget http://www.kali.org/dojo/unattended.txt -O kali-config/common/hooks/02-unattended-boot.binary
+#chmod +x kali-config/common/hooks/02-unattended-boot.binary
+#ls -l kali-config/common/hooks/
+
+##################################################################
+Overlay a new wallpaper in includes.chroot
+##################################################################
+mkdir -p kali-config/common/includes.chroot/usr/share/images/desktop-base/
+wget http://www.kali.org/dojo/wp-blue.png -O kali-config/common/includes.chroot/usr/share/images/desktop-base/kali-wallpaper_1920x1080.png
+
+##################################################################
+Set up an unattended preseed file
+##################################################################
+wget http://www.kali.org/dojo/preseed.cfg -O ./kali-config/common/includes.installer/preseed.cfg
+
+##################################################################
+BUILD THE ISO
+##################################################################
+./build.sh --variant light --distribution sana --verbose
